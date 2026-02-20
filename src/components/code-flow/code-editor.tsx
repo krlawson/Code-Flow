@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { PythonScript } from '@/lib/storage';
-import { Play, Sparkles, Wand2, Info, HelpCircle } from 'lucide-react';
+import { Play, Sparkles, Wand2, Info, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { generatePythonScriptFromPrompt } from '@/ai/flows/generate-python-script-from-prompt';
@@ -76,6 +76,19 @@ export default function CodeEditor({ script, onChange, onRun, isRunning }: CodeE
     }
   };
 
+  const handleDownload = () => {
+    if (!script) return;
+    const blob = new Blob([script.content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = script.name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="h-full w-full flex flex-col bg-background font-code">
       <div className="flex items-center justify-between px-4 py-2 border-b bg-sidebar/10">
@@ -89,6 +102,16 @@ export default function CodeEditor({ script, onChange, onRun, isRunning }: CodeE
           >
             <Play className={cn("w-4 h-4 mr-2", isRunning && "animate-pulse")} />
             {isRunning ? 'Running...' : 'Run Script'}
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleDownload}
+            className="border-border hover:border-primary/50"
+            title="Export to .py"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Export
           </Button>
           <Button 
             variant="outline" 
