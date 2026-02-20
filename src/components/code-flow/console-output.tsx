@@ -14,11 +14,15 @@ interface ConsoleOutputProps {
 export default function ConsoleOutput({ output, onClear, isRunning }: ConsoleOutputProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Auto-scroll to bottom whenever output changes
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
-  }, [output]);
+  }, [output, isRunning]);
 
   return (
     <div className="h-full flex flex-col font-code text-sm">
@@ -28,20 +32,23 @@ export default function ConsoleOutput({ output, onClear, isRunning }: ConsoleOut
           <span className="text-[10px] font-bold uppercase tracking-widest font-body">Console</span>
           {isRunning && <Loader2 className="w-3 h-3 animate-spin text-primary" />}
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={onClear}
-          className="h-6 px-2 text-muted-foreground hover:text-foreground"
-        >
-          <Trash2 className="w-3.5 h-3.5 mr-1" />
-          Clear
-        </Button>
+        <div className="flex items-center gap-2">
+           <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onClear}
+            disabled={isRunning || output.length === 0}
+            className="h-6 px-2 text-muted-foreground hover:text-foreground"
+          >
+            <Trash2 className="w-3.5 h-3.5 mr-1" />
+            Clear
+          </Button>
+        </div>
       </div>
       
       <div 
         ref={scrollRef}
-        className="flex-1 p-4 overflow-y-auto bg-[#0d1117] space-y-1.5"
+        className="flex-1 p-4 overflow-y-auto bg-[#0d1117] space-y-1.5 selection:bg-primary/30"
       >
         {output.length === 0 && !isRunning && (
           <div className="flex items-center text-muted-foreground/40 italic">
@@ -55,18 +62,18 @@ export default function ConsoleOutput({ output, onClear, isRunning }: ConsoleOut
             key={idx} 
             className={cn(
               "flex items-start gap-2 animate-in fade-in slide-in-from-left-2 duration-200",
-              line.type === 'error' ? "text-destructive" : "text-foreground"
+              line.type === 'error' ? "text-red-400 font-bold" : "text-emerald-400"
             )}
           >
-            <span className="text-muted-foreground shrink-0 select-none">[{idx + 1}]</span>
-            <span className="whitespace-pre-wrap">{line.text}</span>
+            <span className="text-muted-foreground/50 shrink-0 select-none w-6 text-right">[{idx + 1}]</span>
+            <span className="whitespace-pre-wrap flex-1">{line.text}</span>
           </div>
         ))}
         
         {isRunning && (
           <div className="flex items-center text-primary/60 italic animate-pulse">
             <ChevronRight className="w-4 h-4 mr-1 shrink-0" />
-            <span>Executing process...</span>
+            <span>Processing command...</span>
           </div>
         )}
       </div>

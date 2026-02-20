@@ -21,11 +21,11 @@ export default function CodeFlowContainer() {
   useEffect(() => {
     const loaded = getScripts();
     setScripts(loaded);
-    if (loaded.length > 0) {
+    if (loaded.length > 0 && !activeScriptId) {
       setActiveScriptId(loaded[0].id);
     }
     setIsMounted(true);
-  }, []);
+  }, [activeScriptId]);
 
   const activeScript = scripts.find(s => s.id === activeScriptId) || null;
 
@@ -63,35 +63,67 @@ export default function CodeFlowContainer() {
 
   const handleRunScript = () => {
     if (!activeScript) return;
-    setIsRunning(true);
-    setConsoleOutput([{ type: 'log', text: `Running ${activeScript.name}...` }]);
     
-    setTimeout(() => {
-      const outputLines: { type: 'log' | 'error', text: string }[] = [];
-      
-      const printMatches = activeScript.content.match(/print\((['"])(.*?)\1\)/g);
-      if (printMatches) {
-        printMatches.forEach(match => {
-          const text = match.slice(7, -2);
-          outputLines.push({ type: 'log', text });
-        });
-      } else if (activeScript.content.trim() === '') {
-        outputLines.push({ type: 'log', text: '(Script is empty)' });
+    setIsRunning(true);
+    setConsoleOutput([{ type: 'log', text: `> python3 ${activeScript.name}` }]);
+    
+    // Define environment logs to make the console feel "active"
+    const envLogs = [
+      { type: 'log', text: '🔍 Scanning for virtual environment...' },
+      { type: 'log', text: '✅ Found .venv (Python 3.11.5)' },
+      { type: 'log', text: '🚀 Initializing Firebase Admin SDK (FIREBASE_CONFIG_PATH detected)...' },
+    ];
+
+    let step = 0;
+    const interval = setInterval(() => {
+      if (step < envLogs.length) {
+        setConsoleOutput(prev => [...prev, envLogs[step]]);
+        step++;
       } else {
-        outputLines.push({ type: 'log', text: 'Script finished with no output.' });
-      }
+        clearInterval(interval);
+        
+        // Final script output simulation
+        const scriptOutput: { type: 'log' | 'error', text: string }[] = [];
+        
+        // Improved print detection (supports variables, numbers, strings)
+        const printRegex = /print\s*\(\s*(['"])(.*?)\1\s*\)|print\s*\(\s*([^'"].*?)\s*\)/g;
+        let match;
+        while ((match = printRegex.exec(activeScript.content)) !== null) {
+          const text = match[2] || match[3];
+          scriptOutput.push({ type: 'log', text: text.trim() });
+        }
 
-      if (activeScript.content.includes('pirnt')) {
-        outputLines.push({ type: 'error', text: 'NameError: name \'pirnt\' is not defined' });
-      }
+        if (scriptOutput.length === 0) {
+          if (activeScript.content.trim() === '') {
+            scriptOutput.push({ type: 'log', text: '(Script is empty)' });
+          } else {
+            scriptOutput.push({ type: 'log', text: 'Process finished with exit code 0.' });
+          }
+        }
 
-      setConsoleOutput(prev => [...prev, ...outputLines]);
-      setIsRunning(false);
-      toast({
-        title: "Execution Finished",
-        description: `Successfully executed ${activeScript.name}`,
-      });
-    }, 800);
+        // Mock error detection (simulating common Python errors for the prototype)
+        if (activeScript.content.includes('pirnt')) {
+           scriptOutput.push({ 
+             type: 'error', 
+             text: 'Traceback (most recent call last):\n  File "' + activeScript.name + '", line 12, in <module>\n    pirnt("hello")\nNameError: name \'pirnt\' is not defined. Did you mean: \'print\'?' 
+           });
+        }
+
+        if (activeScript.content.includes('import non_existent')) {
+          scriptOutput.push({ 
+            type: 'error', 
+            text: 'ModuleNotFoundError: No module named \'non_existent\'' 
+          });
+        }
+
+        setConsoleOutput(prev => [...prev, ...scriptOutput]);
+        setIsRunning(false);
+        toast({
+          title: "Execution Finished",
+          description: `Successfully executed ${activeScript.name}`,
+        });
+      }
+    }, 300);
   };
 
   const clearConsole = () => setConsoleOutput([]);
