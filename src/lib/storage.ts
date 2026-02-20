@@ -8,20 +8,27 @@ export interface PythonScript {
 const STORAGE_KEY = 'codeflow_scripts';
 
 const DEFAULT_SCRIPT_CONTENT = `import asyncio
+import os
 import firebase_admin
 from firebase_admin import credentials, firestore
 
 # Expert Python Hub - Async Firestore Example
 async def main():
-    print("🚀 Initializing Expert Python Engine...")
+    print("🚀 Initializing Expert Python Engine (v3.11)...")
     
-    # In a real environment, initialize with specific credentials
-    # if not firebase_admin._apps:
-    #     cred = credentials.ApplicationDefault()
-    #     firebase_admin.initialize_app(cred)
-        
+    # Check for Studio Environment Config
+    config_path = os.environ.get('FIREBASE_CONFIG_PATH')
+    
+    if config_path and os.path.exists(config_path):
+        print(f"📂 Found Service Account: {config_path}")
+        # if not firebase_admin._apps:
+        #     cred = credentials.Certificate(config_path)
+        #     firebase_admin.initialize_app(cred)
+    else:
+        print("⚠️ FIREBASE_CONFIG_PATH not set. Using Application Default.")
+
     print("✅ System Ready.")
-    await asyncio.sleep(1)
+    await asyncio.sleep(0.5)
     print("💡 Tip: Use 'await' for all Firestore operations to keep the Hub responsive.")
 
 if __name__ == "__main__":

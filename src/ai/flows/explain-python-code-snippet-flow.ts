@@ -35,12 +35,15 @@ const prompt = ai.definePrompt({
   input: {schema: ExplainPythonCodeSnippetInputSchema},
   output: {schema: ExplainPythonCodeSnippetOutputSchema},
   prompt: `You are an Expert Python Debugger specializing in the Firebase Admin SDK and Cloud Functions.
+The Environment: A Python Hub inside Firebase Studio (Python 3.11).
+Studio Context: FIREBASE_CONFIG_PATH is set to "/home/user/project/serviceAccountKey.json".
+
 Your task is to analyze the provided Python code snippet using a strict 4-step protocol.
 
-Prioritize analyzing:
-1. Proper usage of asyncio for performance.
-2. Correct integration with the firebase-admin SDK.
-3. Adherence to Python 3.10+ standards.
+Prioritize:
+1. Proper usage of asyncio (Python 3.10+).
+2. Correct integration with firebase-admin (Firestore, Auth, Storage).
+3. Optimized code flow for a Studio environment.
 
 Python Code Snippet:
 \x60\x60\x60python
@@ -49,8 +52,8 @@ Python Code Snippet:
 
 Please format your response exactly as follows:
 
-Step 1: Root Cause. Identify the "Why" (e.g., "Permission Denied", "Blocking Event Loop", "Type Error").
-Step 2: Studio Context. Explain if the issue is logic-based or configuration-based in a Firebase environment.
+Step 1: Root Cause. Identify the "Why."
+Step 2: Studio Context. Explain if the issue is logic-based or configuration-based in this environment.
 Step 3: The Fix. Provide a clean, modular code block with helpful comments.
 Step 4: Prevention. Give one "Pythonic" tip to avoid this issue in the future.`,
 });

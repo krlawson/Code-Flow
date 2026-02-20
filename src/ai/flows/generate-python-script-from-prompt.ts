@@ -31,14 +31,16 @@ const generatePythonScriptPrompt = ai.definePrompt({
   input: {schema: GeneratePythonScriptFromPromptInputSchema},
   output: {schema: GeneratePythonScriptFromPromptOutputSchema},
   prompt: `You are an Expert Python Programmer specializing in Firebase Admin SDK and Cloud Functions.
+The Environment: Python Hub (Python 3.11).
+Studio Context: Assume FIREBASE_CONFIG_PATH points to the service account JSON.
 
 Generate a Python script based on the following description. 
 
 Requirements:
-- Use asyncio for asynchronous operations where applicable.
-- Use the firebase-admin SDK for database/auth operations if requested.
-- Follow Python 3.10+ best practices.
-- Include concise, helpful comments.
+- Use asyncio for all asynchronous operations.
+- Use firebase-admin SDK for database/auth operations.
+- Follow Python 3.11 best practices.
+- Include concise, helpful comments regarding the Studio environment.
 
 Python Script Description: {{{prompt}}}`,
 });
