@@ -197,7 +197,7 @@ export default function CodeEditor({
             className="border-accent/20 hover:border-accent/50 text-accent"
           >
             <Info className="w-4 h-4 mr-2" />
-            {isExplaining ? 'Thinking...' : 'Explain Code'}
+            {isExplaining ? 'Analyzing...' : 'Debug/Explain'}
           </Button>
         </div>
         <div className="text-[10px] text-muted-foreground font-body uppercase tracking-widest">
@@ -217,15 +217,15 @@ export default function CodeEditor({
           onChange={handleTextChange}
           spellCheck={false}
           className="flex-1 p-4 bg-transparent outline-none resize-none text-sm leading-6 h-full w-full font-code text-foreground focus:ring-0 placeholder:text-muted-foreground/30"
-          placeholder="# Start coding your Python masterpiece..."
+          placeholder="# Start coding or paste a traceback error to debug..."
         />
 
         {explanation && (
-          <div className="absolute top-4 right-4 w-1/3 max-h-[80%] bg-card/95 backdrop-blur-md border border-accent/30 rounded-lg shadow-2xl p-6 overflow-auto animate-in slide-in-from-right-4">
+          <div className="absolute top-4 right-4 w-1/3 max-h-[80%] bg-card/95 backdrop-blur-md border border-accent/30 rounded-lg shadow-2xl p-6 overflow-auto animate-in slide-in-from-right-4 z-50">
             <div className="flex items-center justify-between mb-4 border-b border-accent/20 pb-2">
               <div className="flex items-center gap-2 text-accent font-bold text-sm font-body">
                 <Wand2 className="w-4 h-4" />
-                AI Assistant
+                Expert Debugger
               </div>
               <button 
                 onClick={() => setExplanation(null)}
