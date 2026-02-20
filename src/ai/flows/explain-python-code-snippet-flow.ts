@@ -37,9 +37,9 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert Python programmer and educator. Your task is to explain the provided Python code snippet in clear, concise natural language.
 
 Python Code Snippet:
-\`\`\`python
+\x60\x60\x60python
 {{{codeSnippet}}}
-\`\`\`
+\x60\x60\x60
 
 Explanation:`,
 });

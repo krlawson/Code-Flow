@@ -36,6 +36,16 @@ export default function CodeFlowContainer() {
     setActiveScriptId(newScript.id);
   };
 
+  const handleGenerateNew = (name: string, content: string) => {
+    const newScript = addScript(name, content);
+    setScripts(getScripts());
+    setActiveScriptId(newScript.id);
+    toast({
+      title: "Script Generated",
+      description: `Created ${newScript.name} using AI`,
+    });
+  };
+
   const handleUpdateContent = (content: string) => {
     if (!activeScriptId) return;
     updateScriptContent(activeScriptId, content);
@@ -117,6 +127,7 @@ export default function CodeFlowContainer() {
               onRun={handleRunScript}
               isRunning={isRunning}
               onCreateDefault={() => handleCreateScript('main.py')}
+              onGenerateNew={handleGenerateNew}
             />
           </main>
 

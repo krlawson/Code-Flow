@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { PythonScript } from '@/lib/storage';
-import { Play, Sparkles, Wand2, Info, Download, Plus } from 'lucide-react';
+import { Play, Sparkles, Wand2, Info, Download, Plus, X, Code2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { generatePythonScriptFromPrompt } from '@/ai/flows/generate-python-script-from-prompt';
@@ -23,9 +23,17 @@ interface CodeEditorProps {
   onRun: () => void;
   isRunning: boolean;
   onCreateDefault?: () => void;
+  onGenerateNew?: (name: string, content: string) => void;
 }
 
-export default function CodeEditor({ script, onChange, onRun, isRunning, onCreateDefault }: CodeEditorProps) {
+export default function CodeEditor({ 
+  script, 
+  onChange, 
+  onRun, 
+  isRunning, 
+  onCreateDefault,
+  onGenerateNew
+}: CodeEditorProps) {
   const [lineCount, setLineCount] = useState(1);
   const [aiPrompt, setAiPrompt] = useState('');
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
@@ -39,28 +47,6 @@ export default function CodeEditor({ script, onChange, onRun, isRunning, onCreat
     }
   }, [script]);
 
-  if (!script) {
-    return (
-      <div className="h-full w-full flex flex-col items-center justify-center text-muted-foreground bg-background space-y-6">
-        <div className="p-6 rounded-full bg-sidebar/10 border border-border/50">
-          <CodeBracketIcon className="w-16 h-16 opacity-20" />
-        </div>
-        <div className="text-center space-y-2">
-          <h3 className="text-xl font-semibold text-foreground">No script selected</h3>
-          <p className="text-sm max-w-[280px]">Select a file from the sidebar or create a new one to start building.</p>
-        </div>
-        <Button 
-          variant="outline" 
-          onClick={onCreateDefault}
-          className="border-primary/20 hover:border-primary/50 text-primary"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Create First Script
-        </Button>
-      </div>
-    );
-  }
-
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value);
     setLineCount(e.target.value.split('\n').length || 1);
@@ -71,7 +57,11 @@ export default function CodeEditor({ script, onChange, onRun, isRunning, onCreat
     setIsGenerating(true);
     try {
       const result = await generatePythonScriptFromPrompt({ prompt: aiPrompt });
-      onChange(result.script);
+      if (script) {
+        onChange(result.script);
+      } else if (onGenerateNew) {
+        onGenerateNew('ai_generated.py', result.script);
+      }
       setAiPrompt('');
       setIsAiDialogOpen(false);
     } finally {
@@ -80,7 +70,7 @@ export default function CodeEditor({ script, onChange, onRun, isRunning, onCreat
   };
 
   const handleExplain = async () => {
-    if (!script.content.trim()) return;
+    if (!script?.content.trim()) return;
     setIsExplaining(true);
     try {
       const result = await explainPythonCodeSnippet({ codeSnippet: script.content });
@@ -102,6 +92,69 @@ export default function CodeEditor({ script, onChange, onRun, isRunning, onCreat
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
+  if (!script) {
+    return (
+      <div className="h-full w-full flex flex-col items-center justify-center text-muted-foreground bg-background space-y-6">
+        <div className="p-6 rounded-full bg-sidebar/10 border border-border/50">
+          <Code2 className="w-16 h-16 opacity-20" />
+        </div>
+        <div className="text-center space-y-2">
+          <h3 className="text-xl font-semibold text-foreground">No script selected</h3>
+          <p className="text-sm max-w-[280px]">Select a file from the sidebar, create a new one, or let AI start the journey for you.</p>
+        </div>
+        <div className="flex gap-4">
+          <Button 
+            variant="outline" 
+            onClick={onCreateDefault}
+            className="border-primary/20 hover:border-primary/50 text-primary"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Create First Script
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => setIsAiDialogOpen(true)}
+            className="border-accent/20 hover:border-accent/50 text-accent"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            Generate with AI
+          </Button>
+        </div>
+        
+        <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
+          <DialogContent className="bg-background border-border sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" />
+                Generate with AI
+              </DialogTitle>
+              <DialogDescription className="font-body">
+                Describe the Python script you want to build. CodeFlow will generate the logic and structure for you.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <Textarea
+                placeholder="e.g. A script that scrapes news headlines from a URL..."
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                className="min-h-[120px] font-body"
+              />
+            </div>
+            <DialogFooter>
+              <Button 
+                onClick={handleGenerate} 
+                disabled={isGenerating || !aiPrompt.trim()}
+                className="w-full bg-primary"
+              >
+                {isGenerating ? 'Generating...' : 'Generate Script'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full w-full flex flex-col bg-background font-code">
@@ -178,7 +231,7 @@ export default function CodeEditor({ script, onChange, onRun, isRunning, onCreat
                 onClick={() => setExplanation(null)}
                 className="text-muted-foreground hover:text-foreground p-1"
               >
-                <XIcon className="w-4 h-4" />
+                <X className="w-4 h-4" />
               </button>
             </div>
             <div className="text-sm text-foreground leading-relaxed font-body whitespace-pre-wrap">
@@ -219,31 +272,5 @@ export default function CodeEditor({ script, onChange, onRun, isRunning, onCreat
         </DialogContent>
       </Dialog>
     </div>
-  );
-}
-
-function CodeBracketIcon({ className }: { className?: string }) {
-  return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      className={className}
-    >
-      <polyline points="16 18 22 12 16 6" />
-      <polyline points="8 6 2 12 8 18" />
-    </svg>
-  );
-}
-
-function XIcon({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
-    </svg>
   );
 }
