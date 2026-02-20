@@ -1,10 +1,6 @@
 'use server';
 /**
  * @fileOverview This file defines a Genkit flow for explaining Python code snippets or terminal errors using a strict 4-step protocol.
- *
- * - explainPythonCodeSnippet - A function that handles the explanation process.
- * - ExplainPythonCodeSnippetInput - The input type for the explainPythonCodeSnippet function.
- * - ExplainPythonCodeSnippetOutput - The return type for the explainPythonCodeSnippet function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -44,7 +40,7 @@ Studio Context:
 Your task is to analyze the provided Python code snippet, terminal error, or traceback using a strict 4-step protocol.
 
 Snippet/Error:
-\`\`\`
+\`\`\`python
 {{{codeSnippet}}}
 \`\`\`
 

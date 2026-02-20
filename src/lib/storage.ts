@@ -103,31 +103,28 @@ if __name__ == "__main__":
 export const getScripts = (): PythonScript[] => {
   if (typeof window === 'undefined') return [];
   const stored = localStorage.getItem(STORAGE_KEY);
-  if (!stored) {
-    const scripts: PythonScript[] = [
-      {
-        id: 'default',
-        name: 'main.py',
-        content: DEFAULT_SCRIPT_CONTENT,
-        updatedAt: Date.now(),
-      },
-      {
-        id: 'venv-setup',
-        name: 'setup_venv.py',
-        content: VENV_SETUP_CONTENT,
-        updatedAt: Date.now(),
-      },
-      {
-        id: 'github-helper',
-        name: 'push_to_github.py',
-        content: GITHUB_HELPER_CONTENT,
-        updatedAt: Date.now(),
-      }
-    ];
+  let scripts: PythonScript[] = stored ? JSON.parse(stored) : [];
+
+  const defaults = [
+    { id: 'default', name: 'main.py', content: DEFAULT_SCRIPT_CONTENT },
+    { id: 'venv-setup', name: 'setup_venv.py', content: VENV_SETUP_CONTENT },
+    { id: 'github-helper', name: 'push_to_github.py', content: GITHUB_HELPER_CONTENT }
+  ];
+
+  // Ensure all defaults are present
+  let updated = false;
+  defaults.forEach(def => {
+    if (!scripts.find(s => s.id === def.id)) {
+      scripts.push({ ...def, updatedAt: Date.now() });
+      updated = true;
+    }
+  });
+
+  if (updated || !stored) {
     saveScripts(scripts);
-    return scripts;
   }
-  return JSON.parse(stored);
+
+  return scripts;
 };
 
 export const saveScripts = (scripts: PythonScript[]) => {
