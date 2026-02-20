@@ -65,6 +65,41 @@ if __name__ == "__main__":
     setup_venv()
 `;
 
+const GITHUB_HELPER_CONTENT = `import os
+
+def github_helper():
+    """
+    Expert Python Debugger Protocol - GitHub Synchronization
+    Step 1: Root Cause - Linking local Studio project to a remote repository.
+    Step 2: Studio Context - Workspace assumes Nix environment & standard Git.
+    """
+    print("🚀 GitHub Push Preparation Helper")
+    print("-" * 40)
+    
+    if not os.path.exists(".git"):
+        print("❌ Git not initialized in this workspace.")
+        print("👉 RUN IN TERMINAL: git init")
+    else:
+        print("✅ Git is initialized.")
+
+    print("\\n1️⃣ Set your Remote URL:")
+    print("   git remote add origin https://github.com/YOUR_USER/YOUR_REPO.git")
+    
+    print("\\n2️⃣ Stage and Commit your work:")
+    print("   git add .")
+    print("   git commit -m 'feat: initial project structure from Python Hub'")
+    
+    print("\\n3️⃣ Push to GitHub (main branch):")
+    print("   git push -u origin main")
+    
+    print("-" * 40)
+    print("💡 Expert Tip: If 'origin' already exists, use:")
+    print("   git remote set-url origin <URL>")
+
+if __name__ == "__main__":
+    github_helper()
+`;
+
 export const getScripts = (): PythonScript[] => {
   if (typeof window === 'undefined') return [];
   const stored = localStorage.getItem(STORAGE_KEY);
@@ -80,6 +115,12 @@ export const getScripts = (): PythonScript[] => {
         id: 'venv-setup',
         name: 'setup_venv.py',
         content: VENV_SETUP_CONTENT,
+        updatedAt: Date.now(),
+      },
+      {
+        id: 'github-helper',
+        name: 'push_to_github.py',
+        content: GITHUB_HELPER_CONTENT,
         updatedAt: Date.now(),
       }
     ];
