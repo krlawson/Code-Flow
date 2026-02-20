@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { PythonScript } from '@/lib/storage';
-import { Play, Sparkles, Wand2, Info, Download } from 'lucide-react';
+import { Play, Sparkles, Wand2, Info, Download, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { generatePythonScriptFromPrompt } from '@/ai/flows/generate-python-script-from-prompt';
@@ -22,9 +22,10 @@ interface CodeEditorProps {
   onChange: (content: string) => void;
   onRun: () => void;
   isRunning: boolean;
+  onCreateDefault?: () => void;
 }
 
-export default function CodeEditor({ script, onChange, onRun, isRunning }: CodeEditorProps) {
+export default function CodeEditor({ script, onChange, onRun, isRunning, onCreateDefault }: CodeEditorProps) {
   const [lineCount, setLineCount] = useState(1);
   const [aiPrompt, setAiPrompt] = useState('');
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
@@ -40,9 +41,22 @@ export default function CodeEditor({ script, onChange, onRun, isRunning }: CodeE
 
   if (!script) {
     return (
-      <div className="h-full w-full flex flex-col items-center justify-center text-muted-foreground bg-background">
-        <CodeBracketIcon className="w-16 h-16 mb-4 opacity-10" />
-        <p>Select a script to start coding</p>
+      <div className="h-full w-full flex flex-col items-center justify-center text-muted-foreground bg-background space-y-6">
+        <div className="p-6 rounded-full bg-sidebar/10 border border-border/50">
+          <CodeBracketIcon className="w-16 h-16 opacity-20" />
+        </div>
+        <div className="text-center space-y-2">
+          <h3 className="text-xl font-semibold text-foreground">No script selected</h3>
+          <p className="text-sm max-w-[280px]">Select a file from the sidebar or create a new one to start building.</p>
+        </div>
+        <Button 
+          variant="outline" 
+          onClick={onCreateDefault}
+          className="border-primary/20 hover:border-primary/50 text-primary"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Create First Script
+        </Button>
       </div>
     );
   }
@@ -139,14 +153,12 @@ export default function CodeEditor({ script, onChange, onRun, isRunning }: CodeE
       </div>
 
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Line Numbers */}
         <div className="w-12 bg-sidebar/10 border-r py-4 px-2 text-right text-xs text-muted-foreground select-none shrink-0 overflow-hidden">
           {Array.from({ length: lineCount }).map((_, i) => (
             <div key={i} className="h-6 leading-6">{i + 1}</div>
           ))}
         </div>
 
-        {/* Editor Area */}
         <textarea
           value={script.content}
           onChange={handleTextChange}
@@ -155,7 +167,6 @@ export default function CodeEditor({ script, onChange, onRun, isRunning }: CodeE
           placeholder="# Start coding your Python masterpiece..."
         />
 
-        {/* AI Explanation Overlay */}
         {explanation && (
           <div className="absolute top-4 right-4 w-1/3 max-h-[80%] bg-card/95 backdrop-blur-md border border-accent/30 rounded-lg shadow-2xl p-6 overflow-auto animate-in slide-in-from-right-4">
             <div className="flex items-center justify-between mb-4 border-b border-accent/20 pb-2">
@@ -177,7 +188,6 @@ export default function CodeEditor({ script, onChange, onRun, isRunning }: CodeE
         )}
       </div>
 
-      {/* AI Prompt Dialog */}
       <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
         <DialogContent className="bg-background border-border sm:max-w-md">
           <DialogHeader>
