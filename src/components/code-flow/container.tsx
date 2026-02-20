@@ -67,11 +67,10 @@ export default function CodeFlowContainer() {
     setIsRunning(true);
     setConsoleOutput([{ type: 'log', text: `> python3 ${activeScript.name}` }]);
     
-    // Define environment logs to make the console feel "active"
     const envLogs = [
       { type: 'log', text: '🔍 Scanning for virtual environment...' },
       { type: 'log', text: '✅ Found .venv (Python 3.11.5)' },
-      { type: 'log', text: '🚀 Initializing Firebase Admin SDK (FIREBASE_CONFIG_PATH detected)...' },
+      { type: 'log', text: '🚀 Initializing Python Hub Engine...' },
     ];
 
     let step = 0;
@@ -82,48 +81,41 @@ export default function CodeFlowContainer() {
       } else {
         clearInterval(interval);
         
-        // Final script output simulation
         const scriptOutput: { type: 'log' | 'error', text: string }[] = [];
         
-        // Improved print detection (supports variables, numbers, strings)
-        const printRegex = /print\s*\(\s*(['"])(.*?)\1\s*\)|print\s*\(\s*([^'"].*?)\s*\)/g;
-        let match;
-        while ((match = printRegex.exec(activeScript.content)) !== null) {
-          const text = match[2] || match[3];
-          scriptOutput.push({ type: 'log', text: text.trim() });
-        }
+        // Advanced detection for terminal commands and logs
+        const lines = activeScript.content.split('\n');
+        lines.forEach(line => {
+          const printMatch = line.match(/print\s*\(\s*(['"])(.*?)\1\s*\)/);
+          const commandMatch = line.match(/COMMAND:\s*(.*)/);
+          
+          if (printMatch) {
+            scriptOutput.push({ type: 'log', text: printMatch[2] });
+          } else if (commandMatch) {
+            scriptOutput.push({ type: 'log', text: `SHELL: ${commandMatch[1]}` });
+          }
+        });
 
         if (scriptOutput.length === 0) {
-          if (activeScript.content.trim() === '') {
-            scriptOutput.push({ type: 'log', text: '(Script is empty)' });
-          } else {
-            scriptOutput.push({ type: 'log', text: 'Process finished with exit code 0.' });
-          }
+          scriptOutput.push({ type: 'log', text: 'Process finished with exit code 0.' });
         }
 
-        // Mock error detection (simulating common Python errors for the prototype)
+        // Mock error detection
         if (activeScript.content.includes('pirnt')) {
            scriptOutput.push({ 
              type: 'error', 
-             text: 'Traceback (most recent call last):\n  File "' + activeScript.name + '", line 12, in <module>\n    pirnt("hello")\nNameError: name \'pirnt\' is not defined. Did you mean: \'print\'?' 
+             text: 'Traceback (most recent call last):\n  File "' + activeScript.name + '", line 12, in <module>\n    pirnt("hello")\nNameError: name \'pirnt\' is not defined.' 
            });
-        }
-
-        if (activeScript.content.includes('import non_existent')) {
-          scriptOutput.push({ 
-            type: 'error', 
-            text: 'ModuleNotFoundError: No module named \'non_existent\'' 
-          });
         }
 
         setConsoleOutput(prev => [...prev, ...scriptOutput]);
         setIsRunning(false);
         toast({
-          title: "Execution Finished",
-          description: `Successfully executed ${activeScript.name}`,
+          title: "Execution Simulation Finished",
+          description: "See console for output instructions.",
         });
       }
-    }, 300);
+    }, 200);
   };
 
   const clearConsole = () => setConsoleOutput([]);
