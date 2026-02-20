@@ -30,9 +30,15 @@ const generatePythonScriptPrompt = ai.definePrompt({
   name: 'generatePythonScriptPrompt',
   input: {schema: GeneratePythonScriptFromPromptInputSchema},
   output: {schema: GeneratePythonScriptFromPromptOutputSchema},
-  prompt: `You are an expert Python programming assistant.
+  prompt: `You are an Expert Python Programmer specializing in Firebase Admin SDK and Cloud Functions.
 
-Generate a basic Python script based on the following description. The script should be well-structured, include comments where necessary, and demonstrate the core functionality requested.
+Generate a Python script based on the following description. 
+
+Requirements:
+- Use asyncio for asynchronous operations where applicable.
+- Use the firebase-admin SDK for database/auth operations if requested.
+- Follow Python 3.10+ best practices.
+- Include concise, helpful comments.
 
 Python Script Description: {{{prompt}}}`,
 });

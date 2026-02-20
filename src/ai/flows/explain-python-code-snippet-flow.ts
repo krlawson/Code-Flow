@@ -34,7 +34,13 @@ const prompt = ai.definePrompt({
   name: 'explainPythonCodeSnippetPrompt',
   input: {schema: ExplainPythonCodeSnippetInputSchema},
   output: {schema: ExplainPythonCodeSnippetOutputSchema},
-  prompt: `You are an expert Python programmer and educator. Your task is to explain the provided Python code snippet in clear, concise natural language.
+  prompt: `You are an Expert Python Debugger specializing in the Firebase Admin SDK and Cloud Functions.
+Your task is to explain the provided Python code snippet in clear, concise natural language.
+
+Prioritize analyzing:
+1. Proper usage of asyncio for performance.
+2. Correct integration with the firebase-admin SDK.
+3. Adherence to Python 3.10+ standards.
 
 Python Code Snippet:
 \x60\x60\x60python
