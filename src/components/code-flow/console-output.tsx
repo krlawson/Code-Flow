@@ -1,7 +1,8 @@
+
 "use client";
 
 import React, { useEffect, useRef } from 'react';
-import { Terminal, Trash2, ChevronRight, Loader2, Copy } from 'lucide-react';
+import { Terminal, Trash2, ChevronRight, Loader2, Copy, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -30,16 +31,22 @@ export default function ConsoleOutput({ output, onClear, isRunning }: ConsoleOut
     navigator.clipboard.writeText(text);
     toast({
       title: "Console Copied",
-      description: "Paste these commands into your real terminal.",
+      description: "Paste these commands into your ACTUAL Firebase Studio terminal.",
     });
   };
 
   return (
-    <div className="h-full flex flex-col font-code text-sm">
-      <div className="flex items-center justify-between px-4 py-1.5 border-b bg-sidebar/40 shrink-0">
-        <div className="flex items-center gap-2">
-          <Terminal className="w-4 h-4 text-primary" />
-          <span className="text-[10px] font-bold uppercase tracking-widest font-body">Simulated Terminal</span>
+    <div className="h-full flex flex-col font-code text-sm border-t border-border shadow-2xl">
+      <div className="flex items-center justify-between px-4 py-2 border-b bg-sidebar/60 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Terminal className="w-4 h-4 text-primary" />
+            <span className="text-[10px] font-bold uppercase tracking-widest font-body">Terminal Simulator</span>
+          </div>
+          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-accent/10 border border-accent/20 rounded-full">
+            <AlertCircle className="w-3 h-3 text-accent" />
+            <span className="text-[9px] text-accent uppercase font-bold tracking-tighter">Copy commands to real shell</span>
+          </div>
           {isRunning && <Loader2 className="w-3 h-3 animate-spin text-primary" />}
         </div>
         <div className="flex items-center gap-1">
@@ -48,19 +55,19 @@ export default function ConsoleOutput({ output, onClear, isRunning }: ConsoleOut
             size="sm" 
             onClick={handleCopyAll}
             disabled={output.length === 0}
-            className="h-6 px-2 text-muted-foreground hover:text-foreground"
+            className="h-7 px-3 text-muted-foreground hover:text-foreground hover:bg-white/5"
           >
-            <Copy className="w-3.5 h-3.5 mr-1" />
-            Copy All
+            <Copy className="w-3.5 h-3.5 mr-2" />
+            Copy Commands
           </Button>
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={onClear}
             disabled={isRunning || output.length === 0}
-            className="h-6 px-2 text-muted-foreground hover:text-foreground"
+            className="h-7 px-3 text-muted-foreground hover:text-foreground hover:bg-white/5"
           >
-            <Trash2 className="w-3.5 h-3.5 mr-1" />
+            <Trash2 className="w-3.5 h-3.5 mr-2" />
             Clear
           </Button>
         </div>
@@ -68,12 +75,15 @@ export default function ConsoleOutput({ output, onClear, isRunning }: ConsoleOut
       
       <div 
         ref={scrollRef}
-        className="flex-1 p-4 overflow-y-auto bg-[#0d1117] space-y-1.5 selection:bg-primary/30"
+        className="flex-1 p-4 overflow-y-auto bg-[#0d1117] space-y-2 selection:bg-primary/30 scroll-smooth"
       >
         {output.length === 0 && !isRunning && (
-          <div className="flex items-center text-muted-foreground/40 italic">
-            <ChevronRight className="w-4 h-4 mr-1 shrink-0" />
-            <span>Ready for execution simulation...</span>
+          <div className="h-full flex flex-col items-center justify-center space-y-2 opacity-30 select-none">
+            <Terminal className="w-8 h-8 text-muted-foreground" />
+            <div className="flex items-center text-muted-foreground text-xs italic">
+              <ChevronRight className="w-4 h-4 mr-1 shrink-0" />
+              <span>Ready for execution simulation...</span>
+            </div>
           </div>
         )}
         
@@ -85,15 +95,15 @@ export default function ConsoleOutput({ output, onClear, isRunning }: ConsoleOut
               line.type === 'error' ? "text-red-400 font-bold" : "text-emerald-400"
             )}
           >
-            <span className="text-muted-foreground/50 shrink-0 select-none w-6 text-right">[{idx + 1}]</span>
-            <span className="whitespace-pre-wrap flex-1">{line.text}</span>
+            <span className="text-muted-foreground/50 shrink-0 select-none w-8 text-right font-mono text-[11px] leading-5">[{idx + 1}]</span>
+            <span className="whitespace-pre-wrap flex-1 leading-5">{line.text}</span>
           </div>
         ))}
         
         {isRunning && (
-          <div className="flex items-center text-primary/60 italic animate-pulse">
-            <ChevronRight className="w-4 h-4 mr-1 shrink-0" />
-            <span>Processing simulation...</span>
+          <div className="flex items-center text-primary/60 italic animate-pulse py-1">
+            <ChevronRight className="w-4 h-4 mr-2 shrink-0" />
+            <span className="text-xs">Processing environment variables...</span>
           </div>
         )}
       </div>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -112,7 +113,7 @@ export default function CodeFlowContainer() {
         setIsRunning(false);
         toast({
           title: "Execution Simulation Finished",
-          description: "See console for output instructions.",
+          description: "Check the Terminal for instructions.",
         });
       }
     }, 200);
@@ -133,9 +134,9 @@ export default function CodeFlowContainer() {
         onCreate={handleCreateScript}
         onDelete={handleDeleteScript}
       />
-      <SidebarInset className="flex flex-col overflow-hidden">
-        <div className="flex-1 flex flex-col min-h-0 bg-background">
-          <header className="h-12 border-b flex items-center px-4 bg-sidebar/50">
+      <SidebarInset className="flex flex-col h-screen overflow-hidden">
+        <div className="flex-1 flex flex-col min-h-0 bg-background overflow-hidden">
+          <header className="h-12 shrink-0 border-b flex items-center px-4 bg-sidebar/50">
             <EditorTabs 
               scripts={scripts} 
               activeScriptId={activeScriptId} 
@@ -144,7 +145,7 @@ export default function CodeFlowContainer() {
             />
           </header>
           
-          <main className="flex-1 overflow-hidden relative">
+          <main className="flex-1 min-h-0 overflow-hidden relative border-b">
             <CodeEditor 
               script={activeScript} 
               onChange={handleUpdateContent} 
@@ -155,7 +156,7 @@ export default function CodeFlowContainer() {
             />
           </main>
 
-          <footer className="h-1/3 min-h-[200px] border-t bg-sidebar/30">
+          <footer className="h-[35%] min-h-[200px] shrink-0 bg-sidebar/30">
             <ConsoleOutput 
               output={consoleOutput} 
               onClear={clearConsole}
