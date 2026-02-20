@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview This file defines a Genkit flow for explaining Python code snippets.
+ * @fileOverview This file defines a Genkit flow for explaining Python code snippets using a 4-step protocol.
  *
  * - explainPythonCodeSnippet - A function that handles the explanation process.
  * - ExplainPythonCodeSnippetInput - The input type for the explainPythonCodeSnippet function.
@@ -18,7 +18,7 @@ export type ExplainPythonCodeSnippetInput = z.infer<
 >;
 
 const ExplainPythonCodeSnippetOutputSchema = z.object({
-  explanation: z.string().describe('A natural language explanation of the Python code snippet.'),
+  explanation: z.string().describe('A structured 4-step explanation of the Python code snippet.'),
 });
 export type ExplainPythonCodeSnippetOutput = z.infer<
   typeof ExplainPythonCodeSnippetOutputSchema
@@ -35,7 +35,7 @@ const prompt = ai.definePrompt({
   input: {schema: ExplainPythonCodeSnippetInputSchema},
   output: {schema: ExplainPythonCodeSnippetOutputSchema},
   prompt: `You are an Expert Python Debugger specializing in the Firebase Admin SDK and Cloud Functions.
-Your task is to explain the provided Python code snippet in clear, concise natural language.
+Your task is to analyze the provided Python code snippet using a strict 4-step protocol.
 
 Prioritize analyzing:
 1. Proper usage of asyncio for performance.
@@ -47,7 +47,12 @@ Python Code Snippet:
 {{{codeSnippet}}}
 \x60\x60\x60
 
-Explanation:`,
+Please format your response exactly as follows:
+
+Step 1: Root Cause. Identify the "Why" (e.g., "Permission Denied", "Blocking Event Loop", "Type Error").
+Step 2: Studio Context. Explain if the issue is logic-based or configuration-based in a Firebase environment.
+Step 3: The Fix. Provide a clean, modular code block with helpful comments.
+Step 4: Prevention. Give one "Pythonic" tip to avoid this issue in the future.`,
 });
 
 const explainPythonCodeSnippetFlow = ai.defineFlow(
