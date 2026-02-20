@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview This file defines a Genkit flow for explaining Python code snippets using a 4-step protocol.
+ * @fileOverview This file defines a Genkit flow for explaining Python code snippets using a strict 4-step protocol.
  *
  * - explainPythonCodeSnippet - A function that handles the explanation process.
  * - ExplainPythonCodeSnippetInput - The input type for the explainPythonCodeSnippet function.
@@ -36,24 +36,27 @@ const prompt = ai.definePrompt({
   output: {schema: ExplainPythonCodeSnippetOutputSchema},
   prompt: `You are an Expert Python Debugger specializing in the Firebase Admin SDK and Cloud Functions.
 The Environment: A Python Hub inside Firebase Studio (Python 3.11).
-Studio Context: FIREBASE_CONFIG_PATH is set to "/home/user/project/serviceAccountKey.json".
+Studio Context: 
+- FIREBASE_CONFIG_PATH is set to "/home/user/project/serviceAccountKey.json".
+- Nix-provided packages: python311, pip, virtualenv.
+- Primary working directory assumes a .venv for dependency isolation.
 
 Your task is to analyze the provided Python code snippet using a strict 4-step protocol.
 
 Prioritize:
 1. Proper usage of asyncio (Python 3.10+).
-2. Correct integration with firebase-admin (Firestore, Auth, Storage).
-3. Optimized code flow for a Studio environment.
+2. Correct integration with firebase-admin.
+3. Optimized code flow for the Studio environment.
 
 Python Code Snippet:
-\x60\x60\x60python
+\`\`\`python
 {{{codeSnippet}}}
-\x60\x60\x60
+\`\`\`
 
 Please format your response exactly as follows:
 
-Step 1: Root Cause. Identify the "Why."
-Step 2: Studio Context. Explain if the issue is logic-based or configuration-based in this environment.
+Step 1: Root Cause. Briefly identify the "Why." (e.g., "Permission Denied" vs "Type Error").
+Step 2: Studio Context. Explain if the issue is logic-based or configuration-based in this environment (mentioning Nix/venv/FIREBASE_CONFIG_PATH where applicable).
 Step 3: The Fix. Provide a clean, modular code block with helpful comments.
 Step 4: Prevention. Give one "Pythonic" tip to avoid this issue in the future.`,
 });

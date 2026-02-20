@@ -32,15 +32,18 @@ const generatePythonScriptPrompt = ai.definePrompt({
   output: {schema: GeneratePythonScriptFromPromptOutputSchema},
   prompt: `You are an Expert Python Programmer specializing in Firebase Admin SDK and Cloud Functions.
 The Environment: Python Hub (Python 3.11).
-Studio Context: Assume FIREBASE_CONFIG_PATH points to the service account JSON.
+Studio Context: 
+- FIREBASE_CONFIG_PATH points to "/home/user/project/serviceAccountKey.json".
+- Users work within a virtual environment (.venv).
+- Nix provides python311, pip, and virtualenv.
 
-Generate a Python script based on the following description. 
+Generate a high-performance Python script based on the following description. 
 
 Requirements:
 - Use asyncio for all asynchronous operations.
 - Use firebase-admin SDK for database/auth operations.
 - Follow Python 3.11 best practices.
-- Include concise, helpful comments regarding the Studio environment.
+- Include concise, helpful comments regarding the Studio environment and venv usage.
 
 Python Script Description: {{{prompt}}}`,
 });

@@ -13,7 +13,7 @@ import {
   SidebarGroupLabel,
   SidebarGroupContent
 } from '@/components/ui/sidebar';
-import { Plus, FileJson, Trash2, FolderPlus, Terminal, Code2, Cpu } from 'lucide-react';
+import { Plus, FileJson, Trash2, FolderPlus, Terminal, Code2, Cpu, Box, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PythonScript } from '@/lib/storage';
@@ -61,7 +61,7 @@ export default function AppSidebar({
           <div className="p-1.5 rounded-lg bg-primary/10">
             <Code2 className="w-5 h-5" />
           </div>
-          <span className="text-xl tracking-tight">CodeFlow</span>
+          <span className="text-xl tracking-tight">Python Hub</span>
         </div>
         <div className="hidden group-data-[collapsible=icon]:block">
           <Code2 className="w-6 h-6 text-primary" />
@@ -72,7 +72,31 @@ export default function AppSidebar({
         <SidebarGroup>
           <div className="flex items-center justify-between pr-2 group-data-[collapsible=icon]:hidden">
             <SidebarGroupLabel className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">
-              Script Library
+              Environment
+            </SidebarGroupLabel>
+          </div>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <div className="px-4 py-2 space-y-2 group-data-[collapsible=icon]:hidden">
+                  <div className="flex items-center gap-2 text-xs text-accent font-medium">
+                    <Box className="w-3 h-3" />
+                    <span>.venv detected</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-primary font-medium">
+                    <ShieldCheck className="w-3 h-3" />
+                    <span>Firebase Auth Active</span>
+                  </div>
+                </div>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <div className="flex items-center justify-between pr-2 group-data-[collapsible=icon]:hidden">
+            <SidebarGroupLabel className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">
+              Scripts
             </SidebarGroupLabel>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
@@ -131,11 +155,6 @@ export default function AppSidebar({
                   </div>
                 </SidebarMenuItem>
               ))}
-              {scripts.length === 0 && (
-                <div className="px-4 py-8 text-center text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">
-                  No scripts found
-                </div>
-              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -145,11 +164,11 @@ export default function AppSidebar({
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Cpu className="w-3 h-3 text-accent" />
-            <span>Python 3.11 System</span>
+            <span>Python 3.11 Nix Env</span>
           </div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Terminal className="w-3 h-3 text-primary" />
-            <span>Running Local Engine</span>
+            <span>Studio Hub v1.0</span>
           </div>
         </div>
       </SidebarFooter>
